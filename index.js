@@ -5,7 +5,7 @@ const createPairs = (weeks=4) => {
         throw new Error("Weeks can't be divided into months");
     }
 
-    const users = ['Samy', 'Mund', 'Alexandra', 'Martin', 'Joël'];
+    const users = ['Samy', 'Alexandra', 'Martin', 'Joël'];
     const pairs = [];
 
     for (let i = 0, l = users.length; i < 2 * weeks; i += 2) {
