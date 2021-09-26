@@ -30,9 +30,10 @@ console.log("I'm running");
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const chatId = -262964044;
+const settings = JSON.parse(fs.readFileSync('./settings.json', 'utf8'));
 
 // replace the value below with the Telegram token you receive from @BotFather
-const token = '2047447406:AAF5jn2uNxPR7kDbAWLWlGLQTh4tXKWUAZM';
+const token = settings.bot_token;
 
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, {
