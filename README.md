@@ -1,2 +1,2 @@
 # Kitchen-bot
-Plans the cleaning schedule for RXL 1318
+Plans the cleaning activities for RXL 1318
