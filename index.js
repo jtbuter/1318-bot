@@ -5,7 +5,7 @@ const createTeams = (weeks=4) => {
         throw new Error("Weeks can't be divided into months");
     }
 
-    const names = ['Samy', 'Mund', 'Alexandra', 'Martin', 'Joël'];;
+    const names = ['Samy', 'Mund', 'Alexandra', 'Martin', 'Joël'];
     const people = Object.fromEntries(names.map(name => [name, []]));
 
     for (let i = 0, n = names.length; i < n; i++) {
@@ -62,8 +62,8 @@ const bot = new TelegramBot(token, {
     polling: true
 });
 
-setInterval(async () => {
-// (async () => {
+// setInterval(async () => {
+(async () => {
     const now = Date.now(); // Unix timestamp in milliseconds
 
     const json = await new Promise(r => {
@@ -112,10 +112,10 @@ setInterval(async () => {
 
         bot.sendMessage(chatId, message.join("\n")).then(r => bot.pinChatMessage(r.chat.id, r.message_id));
 
-        json.last_read = now;
+        // json.last_read = now;
         
         fs.writeFile('./cache.json', JSON.stringify(json), () => {});
     }
-// })();
+})();
 
-}, 1000 * 60 * 60); // Every 1 hrs
+// }, 1000 * 60 * 60); // Every 1 hrs
