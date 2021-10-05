@@ -31,7 +31,18 @@ const createTeams = (weeks=4) => {
     }
 
     return teams;
-}
+};
+
+// TODO: non-random scheduling that makes someone clean roughly every other week
+const createSchedule = (teams) => {
+    for (let i = teams.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [teams[i], teams[j]] = [teams[j], teams[i]];
+    }
+
+    return teams;
+};
 
 process.env.NTBA_FIX_319 = 1;
 
@@ -63,7 +74,7 @@ setInterval(async () => {
     if (now - json.last_read > 1000 * 60 * 60 * 24 * 7 * 4) {
         // Out of pairs
         if (json.pairs.length <= 4) {
-            json.pairs = createTeams(52);
+            json.pairs = createSchedule(createTeams(52));
         }
         
         const pairs = [];
