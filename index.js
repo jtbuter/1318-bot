@@ -1,28 +1,36 @@
 #!/usr/bin/env node
 
-const createPairs = (weeks=4) => {
-    if (weeks % 4 != 0) {
+const createTeams = (weeks=4) => {
+    if (weeks % 4 != 0 || weeks <= 0) {
         throw new Error("Weeks can't be divided into months");
     }
 
-    const users = ['Samy', 'Mund', 'Alexandra', 'Martin', 'Joël'];
-    const pairs = [];
+    const names = ['Samy', 'Mund', 'Alexandra', 'Martin', 'Joël'];;
+    const people = Object.fromEntries(names.map(name => [name, []]));
 
-    for (let i = 0, l = users.length; i < 2 * weeks;) {
-        pairs.push([users[i % l], users[(i + 1) % l]])
+    for (let i = 0, n = names.length; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+            if (names[i] == 'Samy' && names[j] == 'Alexandra') continue;
 
-        // 5 weeks are over, shuffle users for new pairings
-        if (i % l == 0 && i > 0) {
-            for (let i = users.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [users[i], users[j]] = [users[j], users[i]];
-            }
+            if (!people[names[i]].includes(names[j])) people[names[i]].push(names[j]);
+            if (!people[names[j]].includes(names[i])) people[names[j]].push(names[i]);
         }
-
-        i += 2;
     }
 
-    return pairs;
+    const teams = [];
+    const bins = Object.fromEntries(names.map(name => [name, 0]));
+
+    while (teams.length < weeks) {
+        const name = Object.keys(bins).reduce((k, v) => bins[v] > bins[k] ? v : k);
+        const partner = people[name].reduce((c, n) => bins[n] > bins[c] ? n : c);
+
+        bins[name] -= 1;
+        bins[partner] -= 1;
+
+        teams.push([name, partner]);
+    }
+
+    return teams;
 }
 
 process.env.NTBA_FIX_319 = 1;
@@ -55,7 +63,7 @@ setInterval(async () => {
     if (now - json.last_read > 1000 * 60 * 60 * 24 * 7 * 4) {
         // Out of pairs
         if (json.pairs.length <= 4) {
-            json.pairs = createPairs(52);
+            json.pairs = createTeams(52);
         }
         
         const pairs = [];
