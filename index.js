@@ -62,8 +62,8 @@ const bot = new TelegramBot(token, {
     polling: true
 });
 
-// setInterval(async () => {
-(async () => {
+setInterval(async () => {
+// (async () => {
     const now = Date.now(); // Unix timestamp in milliseconds
 
     const json = await new Promise(r => {
@@ -112,10 +112,10 @@ const bot = new TelegramBot(token, {
 
         bot.sendMessage(chatId, message.join("\n")).then(r => bot.pinChatMessage(r.chat.id, r.message_id));
 
-        // json.last_read = now;
+        json.last_read = settings.debugging ? 0 : now;
         
         fs.writeFile('./cache.json', JSON.stringify(json), () => {});
     }
-})();
+// })();
 
-// }, 1000 * 60 * 60); // Every 1 hrs
+}, 1000 * 60 * 60); // Every 1 hrs
