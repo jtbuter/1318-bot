@@ -117,7 +117,7 @@ const runBot = async () => {
 
         bot.sendMessage(chatId, message.join("\n")).then(r => bot.pinChatMessage(r.chat.id, r.message_id));
 
-        json.last_read = settings.debugging ? 0 : now;
+        if (!settings.debugging) json.last_read = now;
         
         fs.writeFile('./cache.json', JSON.stringify(json), () => {});
     }
