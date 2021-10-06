@@ -1,20 +1,19 @@
 #!/usr/bin/env node
+const names = ['Samy', 'Mund', 'Alexandra', 'Martin', 'Joël'];
+const people = Object.fromEntries(names.map(name => [name, []]));
+
+for (let i = 0, n = names.length; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+        if (names[i] == 'Samy' && names[j] == 'Alexandra') continue;
+
+        if (!people[names[i]].includes(names[j])) people[names[i]].push(names[j]);
+        if (!people[names[j]].includes(names[i])) people[names[j]].push(names[i]);
+    }
+}
 
 const createTeams = (weeks=4) => {
     if (weeks % 4 != 0 || weeks <= 0) {
         throw new Error("Weeks can't be divided into months");
-    }
-
-    const names = ['Samy', 'Mund', 'Alexandra', 'Martin', 'Joël'];
-    const people = Object.fromEntries(names.map(name => [name, []]));
-
-    for (let i = 0, n = names.length; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-            if (names[i] == 'Samy' && names[j] == 'Alexandra') continue;
-
-            if (!people[names[i]].includes(names[j])) people[names[i]].push(names[j]);
-            if (!people[names[j]].includes(names[i])) people[names[j]].push(names[i]);
-        }
     }
 
     const teams = [];
@@ -35,13 +34,20 @@ const createTeams = (weeks=4) => {
 
 // TODO: non-random scheduling that makes someone clean roughly every other week
 const createSchedule = (teams) => {
-    for (let i = teams.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+    const bins = Object.fromEntries(names.map(name => [name, 0]));
+    const schedule = [];
 
-        [teams[i], teams[j]] = [teams[j], teams[i]];
+    while (schedule.length < teams.length) {
+        const name = Object.keys(bins).reduce((k, v) => bins[v] > bins[k] ? v : k);
+        const partner = people[name].reduce((c, n) => bins[n] > bins[c] ? n : c);
+
+        bins[name] -= 1;
+        bins[partner] -= 1;
+
+        schedule.push([name, partner]);
     }
 
-    return teams;
+    return schedule;
 };
 
 process.env.NTBA_FIX_319 = 1;
@@ -62,8 +68,7 @@ const bot = new TelegramBot(token, {
     polling: true
 });
 
-setInterval(async () => {
-// (async () => {
+const runBot = async () => {
     const now = Date.now(); // Unix timestamp in milliseconds
 
     const json = await new Promise(r => {
@@ -116,6 +121,10 @@ setInterval(async () => {
         
         fs.writeFile('./cache.json', JSON.stringify(json), () => {});
     }
-// })();
+}
 
-}, 1000 * 60 * 60); // Every 1 hrs
+if (settings.debugging) {
+    (async () => runBot())();
+} else {
+    setInterval(async () => runBot(), 1000 * 60 * 60); // Every 1 hrs
+}
